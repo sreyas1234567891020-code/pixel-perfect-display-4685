@@ -258,7 +258,7 @@ export function average(values: number[]) {
 /** Trend from real history: compares the latest score with the average of earlier ones. */
 export function trendOf(history: Assessment[]): TrendDirection {
   if (history.length < 2) return "stable";
-  const latest = history[history.length - 1].percentage;
+  const latest = history[history.length - 1]!.percentage;
   const earlier = average(history.slice(0, -1).map((h) => h.percentage));
   const delta = latest - earlier;
   if (delta >= 2) return "improving";
@@ -285,7 +285,7 @@ export function suggestTarget(current: number) {
   return Math.min(95, Math.round(current + step));
 }
 
-export const currentOverall = overallAssessments[overallAssessments.length - 1].percentage;
+export const currentOverall = overallAssessments[overallAssessments.length - 1]!.percentage;
 export const overallTrend = trendOf(overallAssessments);
 export const overallTarget = 82;
 export const attendancePercentage = Math.round(
@@ -294,16 +294,16 @@ export const attendancePercentage = Math.round(
 export const pendingTasks = tasks.filter((t) => t.status === "pending");
 
 export function subjectCurrent(s: SubjectRecord) {
-  return s.history[s.history.length - 1].percentage;
+  return s.history[s.history.length - 1]!.percentage;
 }
 export function subjectPrevious(s: SubjectRecord) {
-  return s.history[s.history.length - 2]?.percentage ?? s.history[0].percentage;
+  return s.history[s.history.length - 2]?.percentage ?? s.history[0]!.percentage;
 }
 
 /** Simple projection range based on recent pace of change, deliberately conservative. */
 export function projection(history: Assessment[]) {
-  const current = history[history.length - 1].percentage;
-  const first = history[0].percentage;
+  const current = history[history.length - 1]!.percentage;
+  const first = history[0]!.percentage;
   const pace = (current - first) / Math.max(1, history.length - 1);
   const expected = Math.min(97, Math.max(35, current + pace));
   return {

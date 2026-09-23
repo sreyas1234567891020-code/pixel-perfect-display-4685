@@ -115,7 +115,7 @@ function GoalsPage() {
             assessment.
           </li>
           <li>
-            Spend an extra practice session each week on {focus[0].s.name}, the subject with the
+            Spend an extra practice session each week on {focus[0]!.s.name}, the subject with the
             widest gap to its target.
           </li>
           <li>

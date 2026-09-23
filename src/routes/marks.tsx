@@ -82,7 +82,7 @@ function MarksPage() {
                 {average(overallAssessments.map((a) => a.percentage))}%
               </td>
               <td className="px-3 py-3 text-center font-semibold">
-                {gradeFor(overallAssessments[overallAssessments.length - 1].percentage)}
+                {gradeFor(overallAssessments[overallAssessments.length - 1]!.percentage)}
               </td>
             </tr>
           </tbody>

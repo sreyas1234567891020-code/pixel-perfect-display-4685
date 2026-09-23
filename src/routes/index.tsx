@@ -38,8 +38,8 @@ export const Route = createFileRoute("/")({
 });
 
 function Dashboard() {
-  const recent = overallAssessments[overallAssessments.length - 1];
-  const nextExam = exams[0];
+  const recent = overallAssessments[overallAssessments.length - 1]!;
+  const nextExam = exams[0]!;
   const needsAttention = subjects.filter((s) => trendOf(s.history) === "declining");
 
   return (
