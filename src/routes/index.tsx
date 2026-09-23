@@ -1,5 +1,10 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { CalendarDays, ClipboardList, ArrowRight } from "lucide-react";
+import {
+  CalendarDays,
+  ClipboardList,
+  ArrowRight,
+} from "lucide-react";
+
 import {
   student,
   currentOverall,
@@ -9,28 +14,26 @@ import {
   attendanceSummary,
   pendingTasks,
   exams,
-  overallAssessments,
   subjects,
   subjectCurrent,
   subjectPrevious,
   trendOf,
   gradeFor,
 } from "@/data/student";
-import { StatCard, TrendPill, TargetBar, SectionTitle, PageHeader } from "@/components/student/bits";
+
+import {
+  StatCard,
+  TrendPill,
+  TargetBar,
+  SectionTitle,
+  PageHeader,
+} from "@/components/student/bits";
 
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "My Dashboard — Assisi Vidyaniketan Student Progress" },
       {
-        name: "description",
-        content:
-          "Where am I now, how am I progressing, what do I need to complete and what can I reach next.",
-      },
-      { property: "og:title", content: "My Dashboard — Assisi Vidyaniketan Student Progress" },
-      {
-        property: "og:description",
-        content: "Your performance, attendance, pending work and academic target in one place.",
+        title: "Student Dashboard — Assisi Vidyaniketan",
       },
     ],
   }),
@@ -38,133 +41,189 @@ export const Route = createFileRoute("/")({
 });
 
 function Dashboard() {
-  const recent = overallAssessments[overallAssessments.length - 1]!;
-  const nextExam = exams[0]!;
-  const needsAttention = subjects.filter((s) => trendOf(s.history) === "declining");
+  const nextExam = exams[0];
+
+  const weakSubjects = subjects.filter(
+    (subject) => trendOf(subject.history) === "declining",
+  );
 
   return (
     <div>
       <PageHeader
-        title={`Good to see you, ${student.name.split(" ")[0]}`}
-        intro={`${student.className} · Academic year ${student.academicYear}`}
+        title={`Hi, ${student.name.split(" ")[0]}`}
+        intro={`${student.className} · ${student.academicYear}`}
       />
 
-      <SectionTitle title="My current status" description="Where am I right now?" />
+      <SectionTitle title="Overview" />
+
       <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
         <StatCard
-          label="Overall performance"
+          label="Overall mark"
           value={`${currentOverall}%`}
           hint={`Grade ${gradeFor(currentOverall)}`}
-          tone="primary"
         />
+
         <StatCard
           label="Attendance"
           value={`${attendancePercentage}%`}
-          hint={`Recommended ${attendanceSummary.recommendedTarget}%+`}
+          hint={`${attendanceSummary.present} days present`}
         />
+
         <StatCard
           label="Pending work"
           value={pendingTasks.length}
-          hint={pendingTasks.length === 1 ? "item to submit" : "items to submit"}
+          hint="to be completed"
         />
+
         <StatCard
-          label="Recent exam"
-          value={`${recent.percentage}%`}
-          hint={`${recent.name}, ${recent.date}`}
+          label="Target"
+          value={`${overallTarget}%`}
+          hint="current academic target"
         />
       </div>
 
-      <div className="mt-3 grid gap-3 md:grid-cols-2">
+      <div className="mt-4 grid gap-4 md:grid-cols-2">
         <div className="surface p-4">
-          <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
-            Current trend
-          </p>
-          <div className="mt-2 flex items-center gap-3">
-            <TrendPill trend={overallTrend} />
-            <span className="text-sm text-muted-foreground">
-              based on your last {overallAssessments.length} assessments
-            </span>
-          </div>
-        </div>
-        <div className="surface p-4">
-          <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
-            Current target
-          </p>
-          <p className="stat-value mt-2">{overallTarget}%</p>
-          <TargetBar className="mt-3" current={currentOverall} target={overallTarget} />
-        </div>
-      </div>
+          <SectionTitle
+            title="Current performance"
+            description="Based on recent assessments"
+            action={<TrendPill trend={overallTrend} />}
+          />
 
-      <div className="mt-6 grid gap-3 md:grid-cols-2">
+          <p className="text-3xl font-bold">
+            {currentOverall}%
+          </p>
+
+          <TargetBar
+            className="mt-4"
+            current={currentOverall}
+            target={overallTarget}
+          />
+        </div>
+
         <div className="surface p-4">
-          <SectionTitle title="What I need to do" description="Pending work and next exam" />
-          <ul className="space-y-3">
-            {pendingTasks.map((t) => (
-              <li key={t.id} className="flex items-start gap-3">
-                <ClipboardList className="mt-0.5 size-4 text-primary" />
-                <div>
-                  <p className="text-sm font-medium">{t.title}</p>
-                  <p className="text-xs text-muted-foreground">
-                    {t.subject} · {t.type} · due {t.due}
-                  </p>
-                </div>
-              </li>
-            ))}
-            <li className="flex items-start gap-3">
-              <CalendarDays className="mt-0.5 size-4 text-primary" />
-              <div>
-                <p className="text-sm font-medium">Next exam: {nextExam.subject}</p>
-                <p className="text-xs text-muted-foreground">
-                  {nextExam.date} · {nextExam.syllabus}
-                </p>
-              </div>
-            </li>
-          </ul>
+          <SectionTitle title="Next exam" />
+
+          {nextExam && (
+            <>
+              <p className="font-semibold">
+                {nextExam.subject}
+              </p>
+
+              <p className="mt-1 text-sm text-muted-foreground">
+                {nextExam.date}
+              </p>
+
+              <p className="mt-2 text-sm">
+                {nextExam.syllabus}
+              </p>
+            </>
+          )}
+
           <Link
             to="/tasks"
             className="mt-4 inline-flex items-center gap-1 text-sm font-semibold text-primary"
           >
-            View all tasks and exams <ArrowRight className="size-4" />
+            See tasks
+            <ArrowRight className="size-4" />
           </Link>
+        </div>
+      </div>
+
+      <div className="mt-4 grid gap-4 md:grid-cols-2">
+        <div className="surface p-4">
+          <SectionTitle
+            title="Pending work"
+            description="Things that still need to be submitted"
+          />
+
+          <ul className="space-y-3">
+            {pendingTasks.map((task) => (
+              <li
+                key={task.id}
+                className="flex gap-3"
+              >
+                <ClipboardList className="mt-0.5 size-4 text-primary" />
+
+                <div>
+                  <p className="text-sm font-medium">
+                    {task.title}
+                  </p>
+
+                  <p className="text-xs text-muted-foreground">
+                    {task.subject} · due {task.due}
+                  </p>
+                </div>
+              </li>
+            ))}
+          </ul>
         </div>
 
         <div className="surface p-4">
           <SectionTitle
-            title="Subjects to focus on"
-            description="Where extra practice would help most"
+            title="Subjects to check"
+            description="Subjects where the recent marks dropped"
           />
-          {needsAttention.length ? (
+
+          {weakSubjects.length === 0 ? (
+            <p className="text-sm text-muted-foreground">
+              No subjects need immediate attention.
+            </p>
+          ) : (
             <ul className="space-y-3">
-              {needsAttention.map((s) => (
-                <li key={s.id}>
+              {weakSubjects.map((subject) => (
+                <li key={subject.id}>
                   <Link
                     to="/subject/$subjectId"
-                    params={{ subjectId: s.id }}
-                    className="flex items-center justify-between rounded-lg px-2 py-2 transition-colors hover:bg-secondary"
+                    params={{ subjectId: subject.id }}
+                    className="flex items-center justify-between"
                   >
-                    <span>
-                      <span className="text-sm font-medium">{s.name}</span>
-                      <span className="block text-xs text-muted-foreground">
-                        {subjectCurrent(s)}% now, {subjectPrevious(s)}% earlier · needs attention
-                      </span>
-                    </span>
+                    <div>
+                      <p className="text-sm font-medium">
+                        {subject.name}
+                      </p>
+
+                      <p className="text-xs text-muted-foreground">
+                        {subjectCurrent(subject)}% now ·{" "}
+                        {subjectPrevious(subject)}% before
+                      </p>
+                    </div>
+
                     <ArrowRight className="size-4 text-muted-foreground" />
                   </Link>
                 </li>
               ))}
             </ul>
-          ) : (
-            <p className="text-sm text-muted-foreground">
-              All subjects are holding steady or improving right now.
-            </p>
           )}
-          <Link
-            to="/progress"
-            className="mt-4 inline-flex items-center gap-1 text-sm font-semibold text-primary"
-          >
-            See full progress <ArrowRight className="size-4" />
-          </Link>
         </div>
+      </div>
+
+      <div className="mt-4 surface p-4">
+        <SectionTitle
+          title="Upcoming"
+          description="Next few exams"
+        />
+
+        <ul className="space-y-3">
+          {exams.slice(0, 3).map((exam) => (
+            <li
+              key={exam.id}
+              className="flex gap-3"
+            >
+              <CalendarDays className="mt-0.5 size-4 text-primary" />
+
+              <div>
+                <p className="text-sm font-medium">
+                  {exam.subject}
+                </p>
+
+                <p className="text-xs text-muted-foreground">
+                  {exam.date} · {exam.syllabus}
+                </p>
+              </div>
+            </li>
+          ))}
+        </ul>
       </div>
     </div>
   );
