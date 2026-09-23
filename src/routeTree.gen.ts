@@ -11,6 +11,7 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AttendanceRouteImport } from './routes/attendance'
+import { Route as GoalsRouteImport } from './routes/goals'
 import { Route as MarksRouteImport } from './routes/marks'
 import { Route as ProgressRouteImport } from './routes/progress'
 import { Route as TasksRouteImport } from './routes/tasks'
@@ -23,6 +24,11 @@ const IndexRoute = IndexRouteImport.update({
 const AttendanceRoute = AttendanceRouteImport.update({
   id: '/attendance',
   path: '/attendance',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const GoalsRoute = GoalsRouteImport.update({
+  id: '/goals',
+  path: '/goals',
   getParentRoute: () => rootRouteImport,
 } as any)
 const MarksRoute = MarksRouteImport.update({
@@ -44,6 +50,7 @@ const TasksRoute = TasksRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/attendance': typeof AttendanceRoute
+  '/goals': typeof GoalsRoute
   '/marks': typeof MarksRoute
   '/progress': typeof ProgressRoute
   '/tasks': typeof TasksRoute
@@ -51,6 +58,7 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/attendance': typeof AttendanceRoute
+  '/goals': typeof GoalsRoute
   '/marks': typeof MarksRoute
   '/progress': typeof ProgressRoute
   '/tasks': typeof TasksRoute
@@ -59,21 +67,30 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/attendance': typeof AttendanceRoute
+  '/goals': typeof GoalsRoute
   '/marks': typeof MarksRoute
   '/progress': typeof ProgressRoute
   '/tasks': typeof TasksRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/attendance' | '/marks' | '/progress' | '/tasks'
+  fullPaths: '/' | '/attendance' | '/goals' | '/marks' | '/progress' | '/tasks'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/attendance' | '/marks' | '/progress' | '/tasks'
-  id: '__root__' | '/' | '/attendance' | '/marks' | '/progress' | '/tasks'
+  to: '/' | '/attendance' | '/goals' | '/marks' | '/progress' | '/tasks'
+  id:
+    | '__root__'
+    | '/'
+    | '/attendance'
+    | '/goals'
+    | '/marks'
+    | '/progress'
+    | '/tasks'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AttendanceRoute: typeof AttendanceRoute
+  GoalsRoute: typeof GoalsRoute
   MarksRoute: typeof MarksRoute
   ProgressRoute: typeof ProgressRoute
   TasksRoute: typeof TasksRoute
@@ -93,6 +110,13 @@ declare module '@tanstack/react-router' {
       path: '/attendance'
       fullPath: '/attendance'
       preLoaderRoute: typeof AttendanceRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/goals': {
+      id: '/goals'
+      path: '/goals'
+      fullPath: '/goals'
+      preLoaderRoute: typeof GoalsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/marks': {
@@ -122,6 +146,7 @@ declare module '@tanstack/react-router' {
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AttendanceRoute: AttendanceRoute,
+  GoalsRoute: GoalsRoute,
   MarksRoute: MarksRoute,
   ProgressRoute: ProgressRoute,
   TasksRoute: TasksRoute,
