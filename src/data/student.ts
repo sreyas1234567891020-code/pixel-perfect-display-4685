@@ -280,10 +280,7 @@ export function gradeFor(percentage: number) {
 }
 
 /** Keeps targets realistic: a modest step above current performance, capped at 95. */
-export function suggestTarget(current: number) {
-  const step = current >= 90 ? 2 : current >= 80 ? 3 : current >= 70 ? 4 : 5;
-  return Math.min(95, Math.round(current + step));
-}
+
 
 export const currentOverall = overallAssessments[overallAssessments.length - 1]!.percentage;
 export const overallTrend = trendOf(overallAssessments);
@@ -300,14 +297,4 @@ export function subjectPrevious(s: SubjectRecord) {
   return s.history[s.history.length - 2]?.percentage ?? s.history[0]!.percentage;
 }
 
-/** Simple projection range based on recent pace of change, deliberately conservative. */
-export function projection(history: Assessment[]) {
-  const current = history[history.length - 1]!.percentage;
-  const first = history[0]!.percentage;
-  const pace = (current - first) / Math.max(1, history.length - 1);
-  const expected = Math.min(97, Math.max(35, current + pace));
-  return {
-    low: Math.round(Math.max(35, expected - 3)),
-    high: Math.round(Math.min(98, expected + 3)),
-  };
-}
+
